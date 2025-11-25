@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seguimiento de medicación</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Salud mental</p>
+      <h1>Registro semanal de medicación</h1>
+      <p class="lede">Organiza tu tratamiento, registra progresos y recibe recordatorios adaptados a tu ritmo.</p>
+      <div class="actions">
+        <button id="scrollToForm" class="primary">Añadir medicación</button>
+        <button id="scrollToReminders" class="ghost">Ver recordatorios</button>
+      </div>
+    </div>
+    <div class="pill-card">
+      <p class="pill-card__title">Resumen rápido</p>
+      <div class="pill-card__stat" id="statActive">0 planes activos</div>
+      <div class="pill-card__stat" id="statDue">0 recordatorios pendientes</div>
+      <div class="pill-card__stat" id="statWeek">Semana 0 en curso</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel" id="alerts">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Alertas de interacción</p>
+          <h2>Notas para tu próxima cita</h2>
+        </div>
+        <p class="muted">Interacciones simuladas con un catálogo de ejemplo; sirven como guías para conversar con tu médico.</p>
+      </div>
+      <div id="alertCard" class="alert-card alert-card--empty">
+        <p class="muted">Aún no hay alertas. Añade medicamentos o suplementos para ver recomendaciones.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="reminders">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Recordatorios semanales</p>
+          <h2>Que no se te pase registrar</h2>
+        </div>
+        <p class="muted">Los recordatorios se basan en tus intervalos personalizados y muestran cuándo fue tu último registro.</p>
+      </div>
+      <div id="reminderList" class="reminder-grid"></div>
+    </section>
+
+    <section class="panel" id="add">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Nuevo tratamiento</p>
+          <h2>Configura tu plan</h2>
+        </div>
+        <p class="muted">Define cada medicamento, su dosis, la frecuencia de recordatorio y la duración estimada.</p>
+      </div>
+      <form id="medForm" class="form-grid" autocomplete="off">
+        <label>Nombre del medicamento<input list="medOptions" required name="name" placeholder="Ej. Sertralina" autocomplete="off" autocapitalize="none" spellcheck="false" /></label>
+        <datalist id="medOptions"></datalist>
+        <label>Dosis y horario<input required name="dose" placeholder="50 mg por la mañana" /></label>
+        <label>Fecha de inicio<input required name="start" type="date" /></label>
+        <label>Duración objetivo (semanas)<input required name="duration" type="number" min="1" max="52" value="12" /></label>
+        <label>Recordar cada (semanas)<input required name="interval" type="number" min="1" max="6" value="1" /></label>
+        <label>Notas iniciales<textarea name="notes" rows="2" placeholder="Indicaciones o expectativas"></textarea></label>
+        <button class="primary" type="submit">Guardar plan</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Seguimiento</p>
+          <h2>Tu progreso por medicamento</h2>
+        </div>
+        <p class="muted">Añade registros semanales con síntomas, efectos secundarios y notas personalizadas.</p>
+      </div>
+      <div id="medList" class="med-grid"></div>
+    </section>
+  </main>
+
+  <template id="progressFormTemplate">
+    <div class="progress-form">
+      <label>Estado de ánimo (1-5)
+        <input name="mood" type="range" min="1" max="5" value="3" />
+        <div class="range-labels"><span>Muy bajo</span><span>Neutral</span><span>Óptimo</span></div>
+      </label>
+      <label>Efectos secundarios
+        <input name="effects" placeholder="Náuseas, insomnio..." />
+      </label>
+      <label>Notas
+        <textarea name="notes" rows="2" placeholder="Cambios percibidos, ajustes, etc." ></textarea>
+      </label>
+      <label class="checkbox">
+        <input type="checkbox" name="adherence" /> Tomé todas las dosis esta semana
+      </label>
+      <label>Extender recordatorio (semanas)
+        <input name="snooze" type="number" min="0" max="6" value="0" />
+      </label>
+      <div class="form-actions">
+        <button class="primary" type="submit">Guardar registro</button>
+        <button class="ghost" type="button" data-close>Cancelar</button>
+      </div>
+    </div>
+  </template>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
