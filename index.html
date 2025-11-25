@@ -32,7 +32,7 @@
           <p class="eyebrow">Alertas de interacción</p>
           <h2>Notas para tu próxima cita</h2>
         </div>
-        <p class="muted">El sistema cruza tus tratamientos y sugiere temas para conversar con tu médico.</p>
+        <p class="muted">Interacciones simuladas con un catálogo de ejemplo; sirven como guías para conversar con tu médico.</p>
       </div>
       <div id="alertCard" class="alert-card alert-card--empty">
         <p class="muted">Aún no hay alertas. Añade medicamentos o suplementos para ver recomendaciones.</p>
@@ -58,8 +58,8 @@
         </div>
         <p class="muted">Define cada medicamento, su dosis, la frecuencia de recordatorio y la duración estimada.</p>
       </div>
-      <form id="medForm" class="form-grid">
-        <label>Nombre del medicamento<input list="medOptions" required name="name" placeholder="Ej. Sertralina" /></label>
+      <form id="medForm" class="form-grid" autocomplete="off">
+        <label>Nombre del medicamento<input list="medOptions" required name="name" placeholder="Ej. Sertralina" autocomplete="off" autocapitalize="none" spellcheck="false" /></label>
         <datalist id="medOptions"></datalist>
         <label>Dosis y horario<input required name="dose" placeholder="50 mg por la mañana" /></label>
         <label>Fecha de inicio<input required name="start" type="date" /></label>

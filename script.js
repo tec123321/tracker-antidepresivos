@@ -144,7 +144,7 @@ function renderAlertPanel(data) {
   const disclaimer = document.createElement('p');
   disclaimer.className = 'muted';
   disclaimer.style.marginTop = '12px';
-  disclaimer.textContent = 'Herramienta informativa. No sustituye el criterio clínico. Consulta cualquier cambio con tu médico.';
+  disclaimer.textContent = 'Herramienta informativa con interacciones simuladas. No sustituye el criterio clínico. Consulta cualquier cambio con tu médico.';
   alertCard.appendChild(disclaimer);
 }
 
@@ -340,7 +340,7 @@ function showInteractionModal(alerts, onConfirm) {
   card.innerHTML = `
     <p class="eyebrow">Posibles interacciones</p>
     <h3 style="margin:4px 0 8px;">Notas para tu próxima cita</h3>
-    <p class="muted">Se detectaron combinaciones que conviene conversar con tu médico antes de confirmar.</p>
+    <p class="muted">Se detectaron combinaciones simuladas (catálogo de ejemplo) que conviene conversar con tu médico antes de confirmar.</p>
   `;
 
   const list = document.createElement('ul');
@@ -362,7 +362,7 @@ function showInteractionModal(alerts, onConfirm) {
   const disclaimer = document.createElement('p');
   disclaimer.className = 'muted';
   disclaimer.style.margin = '12px 0 16px';
-  disclaimer.textContent = 'Herramienta informativa. No modifica ni sustituye las indicaciones médicas.';
+  disclaimer.textContent = 'Herramienta informativa con interacciones simuladas. No modifica ni sustituye las indicaciones médicas.';
   card.appendChild(disclaimer);
 
   const actions = document.createElement('div');
