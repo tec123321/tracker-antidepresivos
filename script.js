@@ -1,3 +1,5 @@
+import { medDatabase } from './data.js';
+
 const storageKey = 'med-tracker';
 const medForm = document.getElementById('medForm');
 const medList = document.getElementById('medList');
@@ -5,10 +7,14 @@ const reminderList = document.getElementById('reminderList');
 const statActive = document.getElementById('statActive');
 const statDue = document.getElementById('statDue');
 const statWeek = document.getElementById('statWeek');
+const alertCard = document.getElementById('alertCard');
+const medOptions = document.getElementById('medOptions');
 
 function loadData() {
   const raw = localStorage.getItem(storageKey);
-  return raw ? JSON.parse(raw) : { meds: [] };
+  const data = raw ? JSON.parse(raw) : { meds: [], alertsLog: [] };
+  if (!data.alertsLog) data.alertsLog = [];
+  return data;
 }
 
 function saveData(data) {
@@ -17,6 +23,55 @@ function saveData(data) {
 
 function uuid() {
   return crypto.randomUUID();
+}
+
+function slugify(value) {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[^a-z0-9\s_-]/g, '')
+    .trim()
+    .replace(/\s+/g, '_');
+}
+
+function findMedEntry(input) {
+  const normalized = slugify(input);
+  return medDatabase.find((m) => m.id === normalized || slugify(m.name) === normalized);
+}
+
+function checkInteractions(newMedId, currentMedsList) {
+  const alerts = [];
+  const newMedData = medDatabase.find((m) => m.id === newMedId);
+
+  if (!newMedData) return [];
+
+  currentMedsList.forEach((currentMed) => {
+    const conflictInNew = newMedData.cautionList?.find((c) => c.targetId === currentMed.catalogId);
+    if (conflictInNew) {
+      alerts.push({
+        med1: newMedData.name,
+        med2: currentMed.name,
+        msg: conflictInNew.msg,
+        level: conflictInNew.level,
+        code: `${newMedData.id}-${currentMed.catalogId}`,
+      });
+    }
+
+    const currentMedData = medDatabase.find((m) => m.id === currentMed.catalogId);
+    const conflictInCurrent = currentMedData?.cautionList?.find((c) => c.targetId === newMedId);
+
+    if (conflictInCurrent && !conflictInNew) {
+      alerts.push({
+        med1: currentMed.name,
+        med2: newMedData.name,
+        msg: conflictInCurrent.msg,
+        level: conflictInCurrent.level,
+        code: `${currentMed.catalogId}-${newMedData.id}`,
+      });
+    }
+  });
+
+  return alerts;
 }
 
 function weeksBetween(startDate, endDate = new Date()) {
@@ -50,6 +105,47 @@ function reminderStatus(med) {
     return { status: 'due', message, missingWeeks };
   }
   return { status: 'ok', message: `Al día (semana ${lastWeek})` };
+}
+
+function renderAlertPanel(data) {
+  alertCard.innerHTML = '';
+  const alerts = [...(data.alertsLog || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+
+  if (!alerts.length) {
+    alertCard.classList.add('alert-card--empty');
+    alertCard.innerHTML = '<p class="muted">Aún no hay alertas. Añade medicamentos o suplementos para ver recomendaciones.</p>';
+    return;
+  }
+
+  alertCard.classList.remove('alert-card--empty');
+
+  const header = document.createElement('div');
+  header.className = 'alert-card__head';
+  header.innerHTML = '<p class="pill-card__title">Posibles temas para conversar con tu médico</p>';
+  alertCard.appendChild(header);
+
+  const list = document.createElement('ul');
+  list.className = 'alert-list';
+  alerts.forEach((item) => {
+    const li = document.createElement('li');
+    li.className = 'alert-list__item';
+    li.innerHTML = `
+      <div>
+        <strong>${item.med1}</strong> + <strong>${item.med2}</strong>
+        <p class="muted" style="margin:2px 0 0 0;">${item.msg}</p>
+        <p class="muted" style="margin:2px 0 0 0;font-size:12px;">Registrado: ${new Date(item.date).toLocaleDateString()}</p>
+      </div>
+      <span class="badge badge-${item.level}">${item.level}</span>
+    `;
+    list.appendChild(li);
+  });
+  alertCard.appendChild(list);
+
+  const disclaimer = document.createElement('p');
+  disclaimer.className = 'muted';
+  disclaimer.style.marginTop = '12px';
+  disclaimer.textContent = 'Herramienta informativa. No sustituye el criterio clínico. Consulta cualquier cambio con tu médico.';
+  alertCard.appendChild(disclaimer);
 }
 
 function renderReminders(data) {
@@ -230,6 +326,76 @@ function openProgressForm(medId, data) {
   });
 }
 
+function showInteractionModal(alerts, onConfirm) {
+  const dialog = document.createElement('div');
+  dialog.style.position = 'fixed';
+  dialog.style.inset = '0';
+  dialog.style.background = 'rgba(0,0,0,0.65)';
+  dialog.style.display = 'grid';
+  dialog.style.placeItems = 'center';
+  dialog.style.padding = '16px';
+
+  const card = document.createElement('div');
+  card.className = 'alert-modal';
+  card.innerHTML = `
+    <p class="eyebrow">Posibles interacciones</p>
+    <h3 style="margin:4px 0 8px;">Notas para tu próxima cita</h3>
+    <p class="muted">Se detectaron combinaciones que conviene conversar con tu médico antes de confirmar.</p>
+  `;
+
+  const list = document.createElement('ul');
+  list.className = 'alert-list';
+  alerts.forEach((item) => {
+    const li = document.createElement('li');
+    li.className = 'alert-list__item';
+    li.innerHTML = `
+      <div>
+        <strong>${item.med1}</strong> + <strong>${item.med2}</strong>
+        <p class="muted" style="margin:2px 0 0 0;">${item.msg}</p>
+      </div>
+      <span class="badge badge-${item.level}">${item.level}</span>
+    `;
+    list.appendChild(li);
+  });
+  card.appendChild(list);
+
+  const disclaimer = document.createElement('p');
+  disclaimer.className = 'muted';
+  disclaimer.style.margin = '12px 0 16px';
+  disclaimer.textContent = 'Herramienta informativa. No modifica ni sustituye las indicaciones médicas.';
+  card.appendChild(disclaimer);
+
+  const actions = document.createElement('div');
+  actions.className = 'form-actions';
+  const cancel = document.createElement('button');
+  cancel.className = 'ghost';
+  cancel.textContent = 'Revisar de nuevo';
+  cancel.addEventListener('click', () => dialog.remove());
+  const confirm = document.createElement('button');
+  confirm.className = 'primary';
+  confirm.textContent = 'Guardar plan igualmente';
+  confirm.addEventListener('click', () => {
+    onConfirm();
+    dialog.remove();
+  });
+  actions.append(confirm, cancel);
+  card.appendChild(actions);
+
+  dialog.appendChild(card);
+  document.body.appendChild(dialog);
+}
+
+function recordAlerts(data, alerts) {
+  const existing = new Set(data.alertsLog.map((a) => a.code));
+  alerts.forEach((a) => {
+    if (existing.has(a.code)) return;
+    data.alertsLog.push({ ...a, id: uuid(), date: new Date().toISOString() });
+  });
+  if (data.alertsLog.length > 30) {
+    data.alertsLog = data.alertsLog.slice(-30);
+  }
+}
+
 function removeMed(id) {
   const data = loadData();
   data.meds = data.meds.filter((m) => m.id !== id);
@@ -259,26 +425,56 @@ function saveAndRender(data) {
   renderStats(data);
   renderReminders(data);
   renderMeds(data);
+  renderAlertPanel(data);
+}
+
+function populateMedOptions() {
+  medOptions.innerHTML = '';
+  medDatabase.forEach((med) => {
+    const option = document.createElement('option');
+    option.value = med.name;
+    option.label = `${med.name} · ${med.type}`;
+    medOptions.appendChild(option);
+  });
 }
 
 medForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  const formData = new FormData(medForm);
-  const med = {
-    id: uuid(),
-    name: formData.get('name').trim(),
-    dose: formData.get('dose').trim(),
-    startDate: formData.get('start'),
-    durationWeeks: Number(formData.get('duration')),
-    reminderEvery: Number(formData.get('interval')),
-    notes: formData.get('notes').trim(),
-    logs: [],
-    snoozedUntil: null,
-  };
   const data = loadData();
-  data.meds.push(med);
-  saveAndRender(data);
-  medForm.reset();
+  const formData = new FormData(medForm);
+  const name = formData.get('name').trim();
+  const catalogEntry = findMedEntry(name);
+  const catalogId = catalogEntry?.id || slugify(name);
+
+  const currentMeds = data.meds.map((m) => ({ catalogId: m.catalogId || slugify(m.name), name: m.name }));
+  const alerts = checkInteractions(catalogId, currentMeds);
+
+  const persistMed = () => {
+    const med = {
+      id: uuid(),
+      catalogId,
+      name,
+      dose: formData.get('dose').trim(),
+      startDate: formData.get('start'),
+      durationWeeks: Number(formData.get('duration')),
+      reminderEvery: Number(formData.get('interval')),
+      notes: formData.get('notes').trim(),
+      logs: [],
+      snoozedUntil: null,
+    };
+    data.meds.push(med);
+    if (alerts.length) {
+      recordAlerts(data, alerts);
+    }
+    saveAndRender(data);
+    medForm.reset();
+  };
+
+  if (alerts.length) {
+    showInteractionModal(alerts, persistMed);
+  } else {
+    persistMed();
+  }
 });
 
 reminderList.addEventListener('click', (e) => {
@@ -309,5 +505,6 @@ scrollToRemindersBtn.addEventListener('click', () => {
 
 (function init() {
   const data = loadData();
+  populateMedOptions();
   saveAndRender(data);
 })();
