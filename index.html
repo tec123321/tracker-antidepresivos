@@ -15,6 +15,8 @@
       <div class="actions">
         <button id="scrollToForm" class="primary">Añadir medicación</button>
         <button id="scrollToReminders" class="ghost">Ver recordatorios</button>
+        <a class="ghost link-button" href="interacciones.html">Interacciones</a>
+        <a class="ghost link-button" href="retiro.html">Plan de retiro</a>
       </div>
     </div>
     <div class="pill-card">
@@ -37,6 +39,27 @@
       <div id="alertCard" class="alert-card alert-card--empty">
         <p class="muted">Aún no hay alertas. Añade medicamentos o suplementos para ver recomendaciones.</p>
       </div>
+    </section>
+
+    <section class="panel" id="catalog">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Catálogo base</p>
+          <h2>Medicamentos por categoría</h2>
+        </div>
+        <p class="muted">Solo se muestran medicamentos aquí. Los suplementos se listan aparte para no mezclar indicaciones.</p>
+      </div>
+      <div class="catalog-grid">
+        <div>
+          <p class="pill-card__title">Antidepresivos y ansiolíticos</p>
+          <div id="medCatalog" class="chip-grid"></div>
+        </div>
+        <div>
+          <p class="pill-card__title">Suplementos y hábitos</p>
+          <div id="suppCatalog" class="chip-grid"></div>
+        </div>
+      </div>
+      <div class="muted" style="margin-top:12px;">Consulta las interacciones completas en la página de <a class="text-link" href="interacciones.html">interacciones</a>.</div>
     </section>
 
     <section class="panel" id="reminders">

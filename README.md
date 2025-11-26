@@ -3,7 +3,7 @@
 Aplicación web ligera en español para registrar el progreso de tratamientos (por ejemplo, antidepresivos) con seguimiento semanal, recordatorios personalizables y notas.
 
 ## Uso rápido
-1. Abre `index.html` en tu navegador (no requiere servidor).
+1. Abre `index.html` en tu navegador (no requiere servidor). También puedes consultar `interacciones.html` y `retiro.html` si quieres ver las guías auxiliares.
 2. Añade un plan con nombre del medicamento, dosis, fecha de inicio, duración y frecuencia de recordatorio semanal.
 3. Desde la sección de recordatorios o del listado, registra el progreso de la semana: estado de ánimo, efectos, notas y adherencia.
 4. Usa el botón de aplazar para posponer el próximo aviso por 1 semana o ajusta el intervalo de recordatorio según necesites.
@@ -15,6 +15,8 @@ Aplicación web ligera en español para registrar el progreso de tratamientos (p
 - Línea de tiempo por semanas que muestra registros completados, pendientes y futuros.
 - Historial de notas con síntomas, efectos secundarios y adherencia.
 - Panel de alertas bidireccional que detecta combinaciones relevantes y guarda las últimas recomendaciones con nivel de severidad.
+- Catálogo por categorías separado entre medicamentos y suplementos.
+- Página dedicada a interacciones probables (medicamentos + suplementos) y otra con pautas de retiro gradual.
 - Estadísticas rápidas de planes activos, recordatorios pendientes y semana en curso.
 
 ## Tecnologías
