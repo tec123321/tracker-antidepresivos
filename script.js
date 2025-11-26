@@ -9,6 +9,8 @@ const statDue = document.getElementById('statDue');
 const statWeek = document.getElementById('statWeek');
 const alertCard = document.getElementById('alertCard');
 const medOptions = document.getElementById('medOptions');
+const medCatalog = document.getElementById('medCatalog');
+const suppCatalog = document.getElementById('suppCatalog');
 
 function loadData() {
   const raw = localStorage.getItem(storageKey);
@@ -430,12 +432,47 @@ function saveAndRender(data) {
 
 function populateMedOptions() {
   medOptions.innerHTML = '';
-  medDatabase.forEach((med) => {
-    const option = document.createElement('option');
-    option.value = med.name;
-    option.label = `${med.name} · ${med.type}`;
-    medOptions.appendChild(option);
-  });
+  medDatabase
+    .filter((med) => med.classification === 'medication')
+    .forEach((med) => {
+      const option = document.createElement('option');
+      option.value = med.name;
+      option.label = `${med.name} · ${med.type}`;
+      medOptions.appendChild(option);
+    });
+}
+
+function renderCatalog() {
+  if (!medCatalog || !suppCatalog) return;
+
+  const groupByCategory = (items) =>
+    items.reduce((acc, item) => {
+      if (!acc[item.category]) acc[item.category] = [];
+      acc[item.category].push(item.name);
+      return acc;
+    }, {});
+
+  const renderTarget = (element, items) => {
+    element.innerHTML = '';
+    const grouped = groupByCategory(items);
+    Object.entries(grouped)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .forEach(([category, names]) => {
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.innerHTML = `<strong>${category}</strong><br/><span class="muted" style="font-size:12px;">${names.join(', ')}</span>`;
+        element.appendChild(chip);
+      });
+  };
+
+  renderTarget(
+    medCatalog,
+    medDatabase.filter((item) => item.classification === 'medication')
+  );
+  renderTarget(
+    suppCatalog,
+    medDatabase.filter((item) => item.classification !== 'medication')
+  );
 }
 
 medForm.addEventListener('submit', (e) => {
@@ -506,5 +543,6 @@ scrollToRemindersBtn.addEventListener('click', () => {
 (function init() {
   const data = loadData();
   populateMedOptions();
+  renderCatalog();
   saveAndRender(data);
 })();
