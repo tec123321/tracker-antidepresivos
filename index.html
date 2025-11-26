@@ -12,9 +12,12 @@
       <p class="eyebrow">Salud mental</p>
       <h1>Registro semanal de medicación</h1>
       <p class="lede">Organiza tu tratamiento, registra progresos y recibe recordatorios adaptados a tu ritmo.</p>
+      <p class="muted" style="margin-top:8px;">La portada muestra solo medicamentos (antidepresivos, benzodiacepinas, hipnóticos, etc.). Los suplementos quedaron separados en <a class="text-link" href="interacciones.html">Interacciones</a>.</p>
       <div class="actions">
         <button id="scrollToForm" class="primary">Añadir medicación</button>
         <button id="scrollToReminders" class="ghost">Ver recordatorios</button>
+        <a class="ghost link-button" href="interacciones.html">Interacciones</a>
+        <a class="ghost link-button" href="retiro.html">Plan de retiro</a>
       </div>
     </div>
     <div class="pill-card">
@@ -37,6 +40,23 @@
       <div id="alertCard" class="alert-card alert-card--empty">
         <p class="muted">Aún no hay alertas. Añade medicamentos o suplementos para ver recomendaciones.</p>
       </div>
+    </section>
+
+    <section class="panel" id="catalog">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Catálogo base</p>
+          <h2>Medicamentos por categoría</h2>
+        </div>
+        <p class="muted">Solo se muestran medicamentos aquí. Los suplementos se listan aparte para no mezclar indicaciones.</p>
+      </div>
+      <div class="catalog-grid">
+        <div>
+          <p class="pill-card__title">Solo medicamentos</p>
+          <div id="medCatalog" class="chip-grid"></div>
+        </div>
+      </div>
+      <div class="muted" style="margin-top:12px;">Los suplementos y hábitos se listan aparte en la página de <a class="text-link" href="interacciones.html">interacciones</a> para no mezclarlos con los tratamientos.</div>
     </section>
 
     <section class="panel" id="reminders">

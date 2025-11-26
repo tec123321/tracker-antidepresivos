@@ -89,6 +89,13 @@ button:hover {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
 .pill-card {
   border: 1px solid var(--border);
   background: rgba(12, 18, 35, 0.8);
@@ -133,6 +140,32 @@ main {
   align-items: flex-start;
   flex-wrap: wrap;
   margin-bottom: 16px;
+}
+
+.catalog-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.chip-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 0 4px;
+}
+
+.chip {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.text-link {
+  color: var(--accent);
 }
 
 .muted {
